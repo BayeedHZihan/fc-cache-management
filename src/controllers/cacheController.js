@@ -78,8 +78,12 @@ const removeOne = async (req, res) => {
   });
 }
 
-const removeAll = (req, res) => {
+const removeAll = async (req, res) => {
+  await Cache.deleteMany();
 
+  return res.status(200).json({
+    message: 'All keys removed from cache successfully!'
+  });
 }
 
 
