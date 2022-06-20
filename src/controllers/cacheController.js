@@ -1,12 +1,31 @@
 const Cache = require('../models/cache');
-const { handleCacheLimit, generateTtl } = require('../utils/functions');
+const { handleCacheLimit, generateTtl, generateRandomString } = require('../utils/functions');
 
 const getOne = (req, res) => {
 
 }
 
-const getAll = (req, res) => {
-  
+const getAll = async (req, res) => {
+  const currentTime = new Date().getTime();
+  const entries = await Cache.find({});
+  const keys = await Promise.all(
+    entries.map(async entry => {
+      if (entry.ttl < currentTime) {
+        const newValue = generateRandomString();
+        await entry.updateOne({
+          value: newValue,
+          ttl: generateTtl()
+        });
+      }
+
+      return entry.key;
+    })
+  );
+
+  return res.json({
+    data: keys,
+    message: 'Cached keys retrieved successfully!'
+  });
 }
 
 const createOrUpdate = async (req, res) => {
