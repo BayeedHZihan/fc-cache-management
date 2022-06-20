@@ -56,8 +56,26 @@ const createOrUpdate = async (req, res) => {
   }
 }
 
-const removeOne = (req, res) => {
+const removeOne = async (req, res) => {
+  const { key } = req.params;
+  if (!key) {
+    return res.status(400).json({
+      message: 'Key is not valid!'
+    });
+  }
 
+  let cacheEntry = await Cache.findOne({ key });
+  if (!cacheEntry) {
+    return res.status(404).json({
+      message: 'Key is not found!'
+    });
+  }
+
+  await Cache.deleteOne({ key });
+
+  return res.status(200).json({
+    message: 'Key removed successfully!'
+  });
 }
 
 const removeAll = (req, res) => {

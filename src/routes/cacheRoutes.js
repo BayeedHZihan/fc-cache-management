@@ -10,6 +10,6 @@ router.get(`${PATH}/:key`, getOne);
 router.get(`${PATH}/`, getAll);
 router.post(`${PATH}/:key`, createOrUpdate);
 router.delete(`${PATH}/:key`, removeOne);
-router.put(`${PATH}/`, removeAll);
+router.delete(`${PATH}/`, removeAll);
 
 module.exports = router;
