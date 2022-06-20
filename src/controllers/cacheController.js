@@ -10,7 +10,6 @@ const getOne = async (req, res) => {
     const randStr = generateRandomString();
     const result = await handleCacheLimit(key, randStr);
     if (!result) {
-      console.log('in result')
       cacheEntry = new Cache({
         key,
         value: randStr,
