@@ -15,15 +15,15 @@ const handleCacheLimit = async (key, value) => {
       ttl: 1,
       createdAt: 1  
     })
-    .limit(1);
+    .findOne();
   if (!entry) return false;
 
-  await Cache.updateOne({ key }, {
+  await entry.updateOne({
     key,
     value,
     ttl: generateTtl()
   });
-  return true;
+  return true;  
 }
 
 const generateTtl = () => {

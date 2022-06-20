@@ -1,8 +1,40 @@
 const Cache = require('../models/cache');
 const { handleCacheLimit, generateTtl, generateRandomString } = require('../utils/functions');
 
-const getOne = (req, res) => {
+const getOne = async (req, res) => {
+  const { key } = req.params;
 
+  let cacheEntry = await Cache.findOne({ key });
+  if (!cacheEntry) {
+    console.log('Cache miss');
+    const randStr = generateRandomString();
+    const result = await handleCacheLimit(key, randStr);
+    if (!result) {
+      console.log('in result')
+      cacheEntry = new Cache({
+        key,
+        value: randStr,
+        ttl: generateTtl()
+      });
+      await cacheEntry.save();
+    }
+
+    return res.status(200).json({
+      message: 'Key retrived successfully!',
+      data: randStr
+    });
+  } 
+  else {
+    console.log('Cache hit');
+    await cacheEntry.updateOne({
+      ttl: generateTtl()
+    });
+
+    return res.status(200).json({
+      message: 'Key retrived successfully!',
+      data: cacheEntry.value
+    });
+  }
 }
 
 const getAll = async (req, res) => {
